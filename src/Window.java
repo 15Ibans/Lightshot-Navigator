@@ -1,7 +1,3 @@
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -268,9 +263,9 @@ public class Window {
             try {
                 URL direct = LinkManager.getURL("https://prnt.sc/" + url);
                 System.out.println(url + " -> " + direct);
-                System.out.println("Adding to the array");
+                System.out.print("Adding to the array... ");
                 imageArray.add(new ImageIcon(ImageIO.read(direct)));
-                System.out.println("Added");
+                System.out.println("added");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -286,10 +281,10 @@ public class Window {
         for (int i = 0; i < 10; i++) {
             try {
                 URL direct = LinkManager.getURL("https://prnt.sc/" + url);
-                System.out.println(url + "->" + direct);
-                System.out.println("Adding to the array");
+                System.out.println(url + " -> " + direct);
+                System.out.print("Adding to the array... ");
                 imageArray.add(0, new ImageIcon(ImageIO.read(direct)));
-                System.out.println("Added");
+                System.out.println(" added");
             } catch (IOException e) {
                 e.printStackTrace();
                 System.out.println("Looks like " + url + " is bugged.");
