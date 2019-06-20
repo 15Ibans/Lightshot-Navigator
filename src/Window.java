@@ -231,6 +231,7 @@ public class Window {
         for (int i = 0; i < 5; i++) { //adds images to the beginning of the array list
             try {
                 URL direct = LinkManager.getURL("https://prnt.sc/" + url);
+                System.out.println(url + " -> " + direct);
                 imageArray.add(0, new ImageIcon(ImageIO.read(direct)));
                 System.out.println("Added " + url);
             } catch (IOException e) {
@@ -245,6 +246,7 @@ public class Window {
         for (int i = 0; i < 5; i++) { //adds images to the end of the array list
             try {
                 URL direct = LinkManager.getURL("https://prnt.sc/" + url);
+                System.out.println(url + " -> " + direct);
                 imageArray.add(new ImageIcon(ImageIO.read(direct)));
                 System.out.println("Added " + url);
             } catch (IOException e) {
