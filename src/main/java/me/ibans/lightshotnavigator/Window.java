@@ -1,3 +1,5 @@
+package me.ibans.lightshotnavigator;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -44,87 +46,61 @@ public class Window {
         frame.add(input);
         frame.add(grab);
         frame.add(save);
-        grab.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Thread a = new Thread() {
-                    @Override
-                    public void run() {
-                        if (!isImageOn) {
-                            if (input.getText().contains("prntscr")) {
-                                input.setText("https://prnt.sc/" + input.getText().substring(19));
-                            }
-                            addImageIcon(input.getText());
-                            addImages(input.getText());
-                            frame.requestFocus();
-                        } else {
-                            // todo: something to replace this using threads or something lol
-                            updateImageIcon(input.getText());
-                            frame.requestFocus();
-                        }
+        grab.addActionListener(e -> {
+            Thread a = new Thread(() -> {
+                if (!isImageOn) {
+                    if (input.getText().contains("prntscr")) {
+                        input.setText("https://prnt.sc/" + input.getText().substring(19));
                     }
-                };
-                a.start();
+                    addImageIcon(input.getText());
+                    addImages(input.getText());
+                } else {
+                    // todo: something to replace this using threads or something lol
+                    updateImageIcon(input.getText());
+                }
+                frame.requestFocus();
+            });
+            a.start();
+        });
+        previous.addActionListener(e -> {
+            if (currentIndex != 0 && isImageOn) {
+                input.setText("https://prnt.sc/" + LinkManager.decrementID(input.getText().substring(16, input.getText().length()), 1));
+                currentIndex--;
+                updateImageIcon(imageArray.get(currentIndex));
+                Thread a = new Thread(() -> addToBeginning(input.getText()));
+                if (!isLoading && currentIndex == 0) {
+                    a.start();
+                }
+                System.out.println("Current index: " + currentIndex + "/" + (imageArray.size() - 1));
+                frame.requestFocus();
             }
         });
-        previous.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentIndex != 0 && isImageOn) {
-                    input.setText("https://prnt.sc/" + LinkManager.decrementID(input.getText().substring(16, input.getText().length()), 1));
-                    currentIndex--;
-                    updateImageIcon(imageArray.get(currentIndex));
-                    Thread a = new Thread() {
-                        @Override
-                        public void run() {
-                            addToBeginning(input.getText());
-                        }
-                    };
-                    if (!isLoading && currentIndex == 0) {
-                        a.start();
-                    }
-                    System.out.println("Current index: " + currentIndex + "/" + (imageArray.size() - 1));
-                    frame.requestFocus();
+        next.addActionListener(e -> {
+            if (currentIndex != imageArray.size() - 1 && isImageOn) {
+                input.setText("https://prnt.sc/" + LinkManager.incrementID(input.getText().substring(16, input.getText().length()), 1));
+                currentIndex++;
+                updateImageIcon(imageArray.get(currentIndex));
+                Thread a = new Thread(() -> addToEnd(input.getText()));
+                if (!isLoading && currentIndex == imageArray.size() - 1) { // starts thread that adds more images to the array
+                    a.start();
                 }
+                System.out.println("Current index: " + currentIndex + "/" + (imageArray.size() - 1));
+                frame.requestFocus();
             }
         });
-        next.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentIndex != imageArray.size() - 1 && isImageOn) {
-                    input.setText("https://prnt.sc/" + LinkManager.incrementID(input.getText().substring(16, input.getText().length()), 1));
-                    currentIndex++;
-                    updateImageIcon(imageArray.get(currentIndex));
-                    Thread a = new Thread() {
-                        @Override
-                        public void run() {
-                            addToEnd(input.getText());
-                        }
-                    };
-                    if (!isLoading && currentIndex == imageArray.size() - 1) { // starts thread that adds more images to the array
-                        a.start();
-                    }
-                    System.out.println("Current index: " + currentIndex + "/" + (imageArray.size() - 1));
-                    frame.requestFocus();
+        save.addActionListener(e -> {
+            if (isImageOn) {
+                ImageIcon imageIcon = (ImageIcon)label.getIcon();
+                Image image = imageIcon.getImage();
+                BufferedImage bImage = convertToBufferedImage(image);
+                String fileName =  input.getText().substring(16) + ".png";
+                File outputFile = new File(System.getProperty("user.dir") + "\\saved\\" + fileName);
+                try {
+                    ImageIO.write(bImage, "png", outputFile);
+                } catch (IOException ie) {
+                    ie.printStackTrace();
                 }
-            }
-        });
-        save.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (isImageOn) {
-                    ImageIcon imageIcon = (ImageIcon)label.getIcon();
-                    Image image = imageIcon.getImage();
-                    BufferedImage bImage = convertToBufferedImage(image);
-                    String fileName =  input.getText().substring(16) + ".png";
-                    File outputFile = new File(System.getProperty("user.dir") + "\\saved\\" + fileName);
-                    try {
-                        ImageIO.write(bImage, "png", outputFile);
-                    } catch (IOException ie) {
-                        ie.printStackTrace();
-                    }
-                    System.out.println("Saved as " + fileName);
-                }
+                System.out.println("Saved as " + fileName);
             }
         });
 
@@ -199,11 +175,10 @@ public class Window {
                             if (isImageOn == false) {
                                 addImageIcon(input.getText());
                                 addImages(input.getText());
-                                frame.requestFocus();
                             } else {
                                 updateImageIcon(input.getText());
-                                frame.requestFocus();
                             }
+                            frame.requestFocus();
                         }
                     };
                     a.start();
